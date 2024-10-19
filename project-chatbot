@@ -1,0 +1,127 @@
+import datetime
+import pytz
+
+class RuleBasedChatbot:
+    def __init__(self):
+        # Initialize a dictionary for responses
+        self.responses = {
+            "greeting": ["Hi there! How can I assist you today?", "Hello! What can I do for you?", "Hey! How can I help you?"],
+            "morning_greeting": ["Good morning! How can I help you today?", "Morning! What can I do for you?"],
+            "afternoon_greeting": ["Good afternoon! What can I assist you with?", "Afternoon! How can I help?"],
+            "evening_greeting": ["Good evening! How can I assist you tonight?", "Evening! What do you need help with?"],
+            "how_are_you": ["I'm just a bot, but I'm here to help you!", "I'm doing well, thank you! How about you?"],
+            "hours": "We are open Monday to Friday from 9 AM to 5 PM.",
+            "help": "Sure! What do you need help with?",
+            "thank_you": ["You're welcome! If you have any more questions, feel free to ask.", "No problem! Happy to help!"],
+            "goodbye": ["Goodbye! Have a great day!", "See you later!"],
+            "current_time": "The current time is {time}.",
+            "current_date": "Today's date is {date}.",
+            "current_day": "Today is {day}.",
+        }
+
+    def normalize_input(self, user_input):
+        """Normalize the input to lowercase and strip whitespace."""
+        return user_input.lower().strip()
+
+    def identify_intent(self, user_input):
+        """Identify the intent of the user input using if-else statements."""
+        if "hello" in user_input or "hi" in user_input or "hey" in user_input:
+            return "greeting"
+        elif "good morning" in user_input:
+            return "morning_greeting"
+        elif "good afternoon" in user_input:
+            return "afternoon_greeting"
+        elif "good evening" in user_input:
+            return "evening_greeting"
+        elif "how are you" in user_input or "how's it going" in user_input:
+            return "how_are_you"
+        elif "hours" in user_input:
+            return "hours"
+        elif "help" in user_input:
+            return "help"
+        elif "thank you" in user_input or "thanks" in user_input:
+            return "thank_you"
+        elif "goodbye" in user_input or "bye" in user_input:
+            return "goodbye"
+        elif "time" in user_input:
+            return "current_time"
+        elif "date" in user_input:
+            return "current_date"
+        elif "day" in user_input:
+            return "current_day"
+        else:
+            return "unknown"
+
+    def get_response(self, intent):
+        """Generate a response based on identified intent."""
+        if intent == "greeting":
+            return self.random_response(self.responses["greeting"])
+        elif intent == "morning_greeting":
+            return self.random_response(self.responses["morning_greeting"])
+        elif intent == "afternoon_greeting":
+            return self.random_response(self.responses["afternoon_greeting"])
+        elif intent == "evening_greeting":
+            return self.random_response(self.responses["evening_greeting"])
+        elif intent == "how_are_you":
+            return self.random_response(self.responses["how_are_you"])
+        elif intent == "hours":
+            return self.responses["hours"]
+        elif intent == "help":
+            return self.responses["help"]
+        elif intent == "thank_you":
+            return self.random_response(self.responses["thank_you"])
+        elif intent == "goodbye":
+            return self.random_response(self.responses["goodbye"])
+        elif intent == "current_time":
+            current_time = self.get_current_time()
+            return self.responses["current_time"].format(time=current_time)
+        elif intent == "current_date":
+            current_date = self.get_current_date()
+            return self.responses["current_date"].format(date=current_date)
+        elif intent == "current_day":
+            current_day = self.get_current_day()
+            return self.responses["current_day"].format(day=current_day)
+        else:
+            return "I'm sorry, I didn't understand that. Can you please rephrase?"
+
+    def get_current_time(self):
+        """Get the current time in Indian timezone."""
+        timezone = pytz.timezone('Asia/Kolkata')
+        current_time = datetime.datetime.now(timezone).strftime("%H:%M")
+        return current_time
+
+    def get_current_date(self):
+        """Get the current date in Indian timezone."""
+        timezone = pytz.timezone('Asia/Kolkata')
+        current_date = datetime.datetime.now(timezone).strftime("%Y-%m-%d")
+        return current_date
+
+    def get_current_day(self):
+        """Get the current day of the week in Indian timezone."""
+        timezone = pytz.timezone('Asia/Kolkata')
+        current_day = datetime.datetime.now(timezone).strftime("%A")  # %A for full weekday name
+        return current_day
+
+    def random_response(self, responses):
+        """Select a random response from a list."""
+        import random
+        return random.choice(responses)
+
+    def chat(self):
+        """Main chat loop."""
+        print("Chatbot: Hi! I'm here to help you. (type 'exit' to end the conversation)")
+        while True:
+            user_input = input("You: ")
+            user_input = self.normalize_input(user_input)
+            if user_input == "exit":
+                print("Chatbot: Goodbye! Have a great day!")
+                break
+            
+            intent = self.identify_intent(user_input)
+            response = self.get_response(intent)
+            print(f"Chatbot: {response}")
+
+# Example usage
+if __name__ == "__main__":
+    chatbot = RuleBasedChatbot()
+    chatbot.chat()
